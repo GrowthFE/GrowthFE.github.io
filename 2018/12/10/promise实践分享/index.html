@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="promise学习笔记一 JS异步： 1、 回调函数 2、事件发布/订阅模式（观察者模式） 3、使用Promise对象 4、使用Generator函数 5、使用async函数  …等等 Promise 是异步编程的一种解决方案。解决了代码缩进的金字塔问题 二  实现方式： 用 new Promise 方法创建promise对象 用.then 或 .catch 添加promise对象的处理函数 基本">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Promise实践">
+<meta property="og:url" content="http://yoursite.com/2018/12/10/promise实践分享/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="promise学习笔记一 JS异步： 1、 回调函数 2、事件发布/订阅模式（观察者模式） 3、使用Promise对象 4、使用Generator函数 5、使用async函数  …等等 Promise 是异步编程的一种解决方案。解决了代码缩进的金字塔问题 二  实现方式： 用 new Promise 方法创建promise对象 用.then 或 .catch 添加promise对象的处理函数 基本">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://liubin.org/promises-book/Ch1_WhatsPromises/img/promise-states.png">
+<meta property="og:image" content="http://imweb-io-1251594266.file.myqcloud.com/Fm7j8HLbuQlAZEwUG8G7imBLRJrh">
+<meta property="og:updated_time" content="2018-12-10T08:35:09.056Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Promise实践">
+<meta name="twitter:description" content="promise学习笔记一 JS异步： 1、 回调函数 2、事件发布/订阅模式（观察者模式） 3、使用Promise对象 4、使用Generator函数 5、使用async函数  …等等 Promise 是异步编程的一种解决方案。解决了代码缩进的金字塔问题 二  实现方式： 用 new Promise 方法创建promise对象 用.then 或 .catch 添加promise对象的处理函数 基本">
+<meta name="twitter:image" content="http://liubin.org/promises-book/Ch1_WhatsPromises/img/promise-states.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/12/10/promise实践分享/"/>
+
+
+
+
+
+  <title>Promise实践 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/10/promise实践分享/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Promise实践</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-10T08:35:09+00:00">
+                2018-12-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="promise学习笔记"><a href="#promise学习笔记" class="headerlink" title="promise学习笔记"></a>promise学习笔记</h2><p><strong>一 JS异步：</strong></p>
+<p>1、 回调函数</p>
+<p>2、事件发布/订阅模式（观察者模式）</p>
+<p>3、使用Promise对象</p>
+<p>4、使用Generator函数</p>
+<p>5、使用async函数</p>
+<p> …等等</p>
+<p>Promise 是异步编程的一种解决方案。解决了代码缩进的金字塔问题</p>
+<p><strong>二  实现方式：</strong></p>
+<p>用 new Promise 方法创建promise对象</p>
+<p>用.then 或 .catch 添加promise对象的处理函数</p>
+<p>基本写法：</p>
+<pre><code>const promise =newPromise(function(resolve, reject){
+// ... some code
+if(/* 异步操作成功 */){
+        resolve(value);
+}else{
+        reject(error);
+}
+});
+promise.then(res =&gt;{}).catch(err=&gt;{})
+</code></pre><p><strong>三 三种状态</strong></p>
+<p><img src="http://liubin.org/promises-book/Ch1_WhatsPromises/img/promise-states.png" alt="enter image description here"></p>
+<p>从<em>Pending</em>转换为<em>Fulfilled</em>或<em>Rejected</em>之后，  这个promise对象的状态就不会再发生任何变化</p>
+<pre><code>var promise =newPromise(function(resolve){
+    resolve(42);
+    reject(30)
+});
+
+promise.then(function(value){
+    console.log(value);
+}).catch(err =&gt;{
+    console.log(err)
+});
+</code></pre><p><strong>四 用return 替代*resolve</strong></p>
+<ul>
+<li>无法改变状态</li>
+<li>无法链式调用</li>
+</ul>
+<pre><code>const testReturn =(a)=&gt;{
+    returnnewPromise((resolve,reject)=&gt;{
+        if(a){
+            return&apos;this is return&apos;;
+            //resolve(&apos;true&apos;);
+        }else{
+           reject(&apos;false&apos;);
+        }
+    })
+}
+testReturn(true).then(res =&gt;{console.log(res)})
+</code></pre><p>拿不到return结果，且promise状态不会变，依然是pending状态。</p>
+<p><strong>五 用throw</strong> 代替 <strong>reject</strong></p>
+<p>promise对象也变为Rejected状态，但是throw Error不会被catch的</p>
+<pre><code>const testReturn =(a)=&gt;{
+    returnnewPromise((resolve,reject)=&gt;{
+        if(a){
+            thrownewError(&apos;error&apos;);
+            //reject((&apos;error&apos;)
+        }
+    })
+}
+testReturn(true).catch(res =&gt;{console.log(res)})
+</code></pre><p><strong>六 代码执行顺序问题</strong><br>new Promise是同步的，会马上执行function参数中的代码。等function参数执行完，new Promise才返回一个promise实例对象。这时候再调用then，其实是已经fullfill了</p>
+<p>简单例子：</p>
+<pre><code>var promise =newPromise(function(resolve){
+    console.log(&quot;inner promise&quot;);// 1
+    resolve(42);
+});
+promise.then(function(value){
+    console.log(value);// 3
+});
+console.log(&quot;outer promise&quot;);// 2
+
+
+
+newPromise(resolve =&gt;{
+    console.log(1);
+    resolve(3);
+Promise.resolve().then(()=&gt; console.log(4))
+}).then(num =&gt;{
+    console.log(num)
+});
+console.log(2);
+</code></pre><p>当promise遇到setTimeout, <strong>resolve</strong>会将<strong>Promise.then</strong>放在微任务队列中。而setTimeout 属于 macrotask 宏任务。</p>
+<p>浏览器的一个事件循环中只有一个macrotask任务，可以有一个或多个microtask任务。</p>
+<p>promise队列中任务执行完毕，再执行setTimeout的任务队列。</p>
+<p>首先，setTimeout 被推进到 macrotask 队列(将在下一个macrotask中执行)中 -&gt;先执行 macrotask 中的第一个任务（整个script中的同步代和promise 构造函数 ）-&gt;promise.then 回调被推进到 microtask 队列中 (此时，已经执行完了第一个 macrotask) , -&gt;顺序执行所有的 microtask, (也就是 promise.then 的回调函数)。 此时，microtask 队列中的任务已经执行完毕，执行剩下的 macrotask 队列中的任务setTimeout.</p>
+<pre><code>setTimeout(function(){
+    console.log(4)
+},0);
+newPromise(function(resolve){
+     console.log(1)
+for(var i=0; i&lt;10000; i++){
+         i==9999&amp;&amp; resolve(5)
+}
+    console.log(2)
+})
+.then(function(res){
+     console.log(res)
+});
+ console.log(3);
+</code></pre><p>另一种情况: resolve在setTimeout中 1-&gt;2-&gt;4(宏任务结束)-&gt;3(微任务结束)</p>
+<pre><code>const testReturn =(a)=&gt;{
+returnnewPromise((resolve,reject)=&gt;{
+    setTimeout(()=&gt;{
+         if(a){
+             resolve(3);
+             console.log(2);
+        }else{
+            reject(&apos;false&apos;);
+         }
+    })
+        console.log(1);
+    })
+}
+testReturn(true).then(str=&gt;{
+    console.log(str);
+// console.log(testReturn)
+}).catch(err=&gt;{
+    console.log(&apos;err: &apos;,err);
+})
+</code></pre><p>当有<strong>Error</strong>的时候，<strong>Error</strong>后面的代码不会被执行，但是<strong>Promise</strong>的结果依旧是<strong>fulfilled</strong></p>
+<pre><code>const testReturn =(a)=&gt;{
+    returnnewPromise((resolve,reject)=&gt;{
+        if(a){
+            resolve(&apos;exec true&apos;);
+            console.log(&apos;this will be exec&apos;);
+            thrownewError(&apos;error&apos;);
+            console.log(&apos;this will not be exec&apos;)
+        }else{
+            reject(&apos;false&apos;);
+        }
+     })
+}
+testReturn(true).then(str=&gt;{
+    console.log(str);
+// console.log(testReturn)
+}).catch(err=&gt;{
+    console.log(&apos;err: &apos;,err);
+})
+</code></pre><p><strong>七 cacth()  和 then(null, ..)</strong></p>
+<ol>
+<li><p>使用promise.then(onFulfilled, onRejected) :  在 onFulfilled 中发生异常的话，在 onRejected 中捕获不到这个异常。</p>
+</li>
+<li><p>使用 promise.then(onFulfilled).catch(onRejected) 的情况下: then 中产生的异常能在 .catch 中捕获</p>
+</li>
+</ol>
+<p>所以，cacth()  和 then(null, ..)并不完全相同</p>
+<pre><code>function throwError(value){
+// 抛出异常
+    thrownewError(value);
+}
+// &lt;1&gt; onRejected不会被调用
+function badMain(onRejected){
+    returnPromise.resolve(42).then(throwError, onRejected);
+}
+// &lt;2&gt; 有异常发生时onRejected会被调用
+function goodMain(onRejected){
+    returnPromise.resolve(42).then(throwError).catch(onRejected);
+}
+// 运行示例
+badMain(function(){
+    console.log(&quot;BAD&quot;);
+});
+goodMain(function(){
+    console.log(&quot;GOOD&quot;);
+});
+</code></pre><p><strong>八 chain 链式调用</strong></p>
+<p>在 then 方法内部，我们可以做三件事：</p>
+<ol>
+<li>return 一个 promise 对象</li>
+<li>return 一个同步的值或者是 undefined</li>
+<li>同步的 throw 一个错误</li>
+</ol>
+<p>传给每个then 方法的value 的值都是前一个promise对象通过return 返回的值。实现依赖于 then 方法每次都会创建并返回一个新的promise对象</p>
+<p><img src="http://imweb-io-1251594266.file.myqcloud.com/Fm7j8HLbuQlAZEwUG8G7imBLRJrh" alt=""></p>
+<pre><code>var aPromise =newPromise(function(resolve){
+    resolve(100);
+});
+aPromise.then(function(value){
+    return value *2;
+});
+aPromise.then(function(value){
+    return value *2;
+});
+aPromise.then(function(value){
+    console.log(&quot;1: &quot;+ value);// =&gt; 100
+})
+
+var bPromise =newPromise(function(resolve){
+    resolve(100);
+});
+bPromise.then(function(value){
+    return value *2;
+}).then(function(value){
+    return value *2;
+}).then(function(value){
+    console.log(&quot;2: &quot;+ value);// =&gt; 100 * 2 * 2
+});
+</code></pre><p>then的错误写法：promise.then 中产生的异常不会被外部捕获，此外，即使 then有返回值，也拿不到返回值。</p>
+<pre><code>function badAsyncCall(){
+var promise =Promise.resolve(&apos;111&apos;);
+    promise.then(function(){
+// 任意处理
+    return&apos;222&apos;;
+});
+    return promise;
+}
+badAsyncCall().then(res =&gt;{console.log(res)})
+
+function anAsyncCall(){
+    var promise =Promise.resolve(&apos;111&apos;);
+    return promise.then(function(){
+// 任意处理
+     return&apos;222&apos;;
+});
+}
+anAsyncCall().then(res =&gt;{console.log(res)})
+</code></pre><p><strong>九 then同时处理多个异步请求:</strong></p>
+<p>Promise.all 在接收到的所有的对象promise都变为 FulFilled 或者 Rejected 状态之后才会继续进行后面的处理，</p>
+<p>Promise.all()  以一个 promise 对象组成的数组为输入，返回另一个 promise 对象。这个对象的状态只会在数组中所有的 promise 对象的状态都变为 resolved 的时候才会变成 resolved。可以将其理解为异步的 for 循环。</p>
+<p>Promise.race() 只要有一个promise对象进入 FulFilled 或者 Rejected 状态的话，就会继续进行后面的处理，那个率先改变的Promise 实例的返回值，就传递给回调函数。romise.race 在第一个promise对象变为Fulfilled之后，并不会取消其他promise对象的执行</p>
+<pre><code>var winnerPromise =newPromise(function(resolve){
+        setTimeout(function(){
+            console.log(&apos;this is winner&apos;);
+            resolve(&apos;this is winner&apos;);
+},4);
+});
+var loserPromise =newPromise(function(resolve){
+        setTimeout(function(){
+            console.log(&apos;this is loser&apos;);
+            resolve(&apos;this is loser&apos;);
+},1000);
+});
+// 第一个promise变为resolve后程序停止
+Promise.race([winnerPromise, loserPromise]).then(function(value){
+    console.log(value);// =&gt; &apos;this is winner&apos;
+});
+
+// promise.all 解决 forEach问题
+var winnerPromise =newPromise(function(resolve){
+      resolve([1,2,3,4,5,6])
+});
+//错误
+winnerPromise.then(function(result){
+    result.forEach(function(row){
+return result
+});
+}).then(function(res){
+    console.log(res)
+    // I naively believe all docs have been removed() now!
+});
+//正确
+winnerPromise.then(function(result){
+    returnPromise.all(result.map(function(row){
+     return result
+}));
+}).then(function(res){
+    console.log(res)
+// All docs have really been removed() now!
+})
+</code></pre><p><strong>十 new Promise</strong>的快捷方式</p>
+<pre><code>function p (num){
+    if(num &gt;=0){
+        returnPromise.resolve(num)
+    }else{
+        returnPromise.reject(newError(&apos;参数不能小于 0&apos;))
+    }
+}
+p.then(res=&gt;{console.log(res)})
+</code></pre>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/10/await/" rel="next" title="一起来学async/await">
+                <i class="fa fa-chevron-left"></i> 一起来学async/await
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/10/利用VW，Rem实现前端页面的自适应方案/" rel="prev" title="利用VW，Rem实现前端页面的自适应方案">
+                利用VW，Rem实现前端页面的自适应方案 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">John Doe</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#promise学习笔记"><span class="nav-number">1.</span> <span class="nav-text">promise学习笔记</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
